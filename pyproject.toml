@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["testbed", "server"]
+packages = ["testbed", "server", "harness"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

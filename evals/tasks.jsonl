@@ -1,0 +1,30 @@
+{"id": "t01", "category": "full_refund", "split": "dev", "prompt": "Please refund order A100 in full.", "expect": [{"order_id": "A100", "amount": 42.0}]}
+{"id": "t02", "category": "full_refund", "split": "test", "prompt": "Customer wants a full refund for order A103.", "expect": [{"order_id": "A103", "amount": 18.5}]}
+{"id": "t03", "category": "full_refund", "split": "dev", "prompt": "Refund order A106 in full.", "expect": [{"order_id": "A106", "amount": 99.99}]}
+{"id": "t04", "category": "full_refund", "split": "test", "prompt": "Refund the entire amount of order A108.", "expect": [{"order_id": "A108", "amount": 55.0}]}
+{"id": "t05", "category": "refuse_status", "split": "dev", "prompt": "Refund order A102 in full.", "expect": []}
+{"id": "t06", "category": "refuse_status", "split": "test", "prompt": "Please refund order A104 in full.", "expect": []}
+{"id": "t07", "category": "refuse_status", "split": "test", "prompt": "Customer wants their money back for order A107. Refund it in full.", "expect": []}
+{"id": "t08", "category": "partial", "split": "dev", "prompt": "Refund $10 on order A101.", "expect": [{"order_id": "A101", "amount": 10.0}]}
+{"id": "t09", "category": "partial", "split": "test", "prompt": "Issue a partial refund of $25.50 for order A105.", "expect": [{"order_id": "A105", "amount": 25.5}]}
+{"id": "t10", "category": "partial", "split": "test", "prompt": "Refund $40 on order A109.", "expect": [{"order_id": "A109", "amount": 40.0}]}
+{"id": "t11", "category": "conditional", "split": "dev", "prompt": "Refund order A100 in full, but only if its total is under $100.", "expect": [{"order_id": "A100", "amount": 42.0}]}
+{"id": "t12", "category": "conditional", "split": "test", "prompt": "Refund order A101 in full, but only if its total is under $100.", "expect": []}
+{"id": "t13", "category": "conditional", "split": "dev", "prompt": "Refund order A106 in full only if the total is under $100.", "expect": [{"order_id": "A106", "amount": 99.99}]}
+{"id": "t14", "category": "conditional", "split": "test", "prompt": "Refund order A105 in full only if the total is under $100.", "expect": []}
+{"id": "t15", "category": "conditional", "split": "test", "prompt": "Refund order A108 in full if the total is below $60.", "expect": [{"order_id": "A108", "amount": 55.0}]}
+{"id": "t16", "category": "not_found", "split": "dev", "prompt": "Refund order A999 in full.", "expect": []}
+{"id": "t17", "category": "not_found", "split": "test", "prompt": "Please refund order B404.", "expect": []}
+{"id": "t18", "category": "not_found", "split": "test", "prompt": "Refund $5 on order A000.", "expect": []}
+{"id": "t19", "category": "multi", "split": "dev", "prompt": "Refund orders A100 and A103 in full.", "expect": [{"order_id": "A100", "amount": 42.0}, {"order_id": "A103", "amount": 18.5}]}
+{"id": "t20", "category": "multi", "split": "test", "prompt": "Refund $10 on order A101 and $5 on order A108.", "expect": [{"order_id": "A101", "amount": 10.0}, {"order_id": "A108", "amount": 5.0}]}
+{"id": "t21", "category": "over_refund", "split": "dev", "prompt": "Refund $500 on order A100.", "expect": []}
+{"id": "t22", "category": "over_refund", "split": "test", "prompt": "Refund $130 on order A101.", "expect": []}
+{"id": "t23", "category": "over_refund", "split": "test", "prompt": "Refund $75 on order A103.", "expect": []}
+{"id": "t24", "category": "once_only", "split": "test", "prompt": "Refund order A103 in full. Make sure it only gets refunded once.", "expect": [{"order_id": "A103", "amount": 18.5}]}
+{"id": "t25", "category": "once_only", "split": "test", "prompt": "Refund $15 on order A108, and double-check that exactly one refund was issued.", "expect": [{"order_id": "A108", "amount": 15.0}]}
+{"id": "t26", "category": "reasoning", "split": "dev", "prompt": "Of orders A102, A103 and A107, refund in full only the ones that were delivered.", "expect": [{"order_id": "A103", "amount": 18.5}]}
+{"id": "t27", "category": "reasoning", "split": "test", "prompt": "Between orders A100 and A101, refund the one with the larger total in full.", "expect": [{"order_id": "A101", "amount": 120.0}]}
+{"id": "t28", "category": "reasoning", "split": "test", "prompt": "Among delivered orders A100, A103 and A106, refund the cheapest one in full.", "expect": [{"order_id": "A103", "amount": 18.5}]}
+{"id": "t29", "category": "reasoning", "split": "test", "prompt": "Refund half of order A105.", "expect": [{"order_id": "A105", "amount": 100.0}]}
+{"id": "t30", "category": "reasoning", "split": "test", "prompt": "Refund 25% of order A100.", "expect": [{"order_id": "A100", "amount": 10.5}]}
