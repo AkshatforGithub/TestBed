@@ -7,7 +7,7 @@ def get_llm(temperature: float = 0.0):
     if provider == "groq":
         from langchain_groq import ChatGroq
 
-        return ChatGroq(model=config.LLM_MODEL or "openai/gpt-oss-120b", temperature=temperature)
+        return ChatGroq(model=config.LLM_MODEL or "qwen/qwen3.8-27b", temperature=temperature)
     if provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
 
