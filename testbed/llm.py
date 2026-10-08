@@ -1,0 +1,15 @@
+"""One place to choose the model. Defaults to Groq so it matches PaperTrail."""
+from testbed import config
+
+
+def get_llm(temperature: float = 0.0):
+    provider = config.LLM_PROVIDER.lower()
+    if provider == "groq":
+        from langchain_groq import ChatGroq
+
+        return ChatGroq(model=config.LLM_MODEL or "openai/gpt-oss-120b", temperature=temperature)
+    if provider == "anthropic":
+        from langchain_anthropic import ChatAnthropic
+
+        return ChatAnthropic(model=config.LLM_MODEL or "claude-haiku-4-5-20251001", temperature=temperature)
+    raise ValueError(f"Unknown LLM_PROVIDER: {config.LLM_PROVIDER}")

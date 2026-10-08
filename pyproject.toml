@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reliability-testbed"
+version = "0.1.0"
+description = "Fault-injected MCP testbed that measures how reliably LangGraph agents finish tasks"
+requires-python = ">=3.11"
+dependencies = [
+  "mcp>=1.2",
+  "langgraph>=0.2",
+  "langchain-core>=0.3",
+  "langchain-mcp-adapters>=0.1",
+  "langchain-groq>=0.2",
+  "langchain-anthropic>=0.3",
+  "python-dotenv>=1.0",
+  "pytest>=8",
+  "pytest-asyncio>=0.23",
+]
+
+[tool.setuptools]
+packages = ["testbed"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
