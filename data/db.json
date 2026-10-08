@@ -1,0 +1,12 @@
+{
+  "A100": {"customer": "C1", "total": 42.0,   "status": "delivered"},
+  "A101": {"customer": "C2", "total": 120.0,  "status": "delivered"},
+  "A102": {"customer": "C1", "total": 75.0,   "status": "shipped"},
+  "A103": {"customer": "C3", "total": 18.5,   "status": "delivered"},
+  "A104": {"customer": "C2", "total": 60.0,   "status": "cancelled"},
+  "A105": {"customer": "C4", "total": 200.0,  "status": "delivered"},
+  "A106": {"customer": "C3", "total": 99.99,  "status": "delivered"},
+  "A107": {"customer": "C4", "total": 30.0,   "status": "processing"},
+  "A108": {"customer": "C1", "total": 55.0,   "status": "delivered"},
+  "A109": {"customer": "C2", "total": 150.0,  "status": "delivered"}
+}
