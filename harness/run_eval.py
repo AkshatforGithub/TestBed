@@ -32,13 +32,24 @@ SCENARIOS = {  # name -> (fault rate, fault modes)
     "post_commit": (0.4, ["post_commit"]),
 }
 
+RETRIES = 2
+BACKOFF = 20  # seconds
+FALLBACK_MODEL = os.environ.get("FALLBACK_MODEL", "qwen/qwen3-32b")
+
 
 def load_tasks(split: str):
     tasks = [json.loads(line) for line in config.TASKS_PATH.read_text().splitlines() if line.strip()]
     return tasks if split == "all" else [t for t in tasks if t["split"] == split]
 
 
-async def run_one(task, agent_name, scenario, seed, sem):
+def leaf(e: BaseException) -> BaseException:
+    """Unwrap ExceptionGroup (raised by the MCP task group) down to the real error."""
+    while isinstance(e, BaseExceptionGroup) and e.exceptions:
+        e = e.exceptions[0]
+    return e
+
+
+async def _attempt(task, agent_name, scenario, seed, sem, model=None):
     rate, modes = SCENARIOS[scenario]
     async with sem:
         fd, state_path = tempfile.mkstemp(suffix=".json", prefix="testbed_")
@@ -61,7 +72,7 @@ async def run_one(task, agent_name, scenario, seed, sem):
             client = make_client(env)
             async with client.session("orders") as session:  # one server process for the whole run
                 tools = await load_mcp_tools(session)
-                agent = BUILDERS[agent_name](tools)
+                agent = BUILDERS[agent_name](tools, model=model)
                 out = await asyncio.wait_for(
                     agent.ainvoke(
                         {"messages": [("user", task["prompt"])]},
@@ -74,7 +85,8 @@ async def run_one(task, agent_name, scenario, seed, sem):
             row["tokens"] = sum((m.usage_metadata or {}).get("total_tokens", 0) for m in ai)
             row["reason"] = diagnose(read_refunds(state_path), task["expect"])
         except Exception as e:  # noqa: BLE001 - a crash is a failed run, not a harness bug
-            row["reason"] = f"crash:{type(e).__name__}"
+            err = leaf(e)
+            row["reason"] = f"crash:{type(err).__name__}:{str(err)[:150]}"
         row["success"] = row["reason"] == "ok"
         row["latency_s"] = round(time.time() - t0, 2)
         try:
@@ -82,6 +94,24 @@ async def run_one(task, agent_name, scenario, seed, sem):
         except OSError:
             pass
         return row
+
+
+def is_rate_limit(reason: str) -> bool:
+    return reason.startswith("crash:RateLimitError")
+
+
+async def run_one(task, agent_name, scenario, seed, sem):
+    """Retry the primary model on 429s, then fall back. Each attempt gets a fresh server and state."""
+    for i in range(RETRIES + 1):
+        row = await _attempt(task, agent_name, scenario, seed, sem, model=None)
+        if not is_rate_limit(row["reason"]):
+            row["model"] = "primary"
+            return row
+        if i < RETRIES:
+            await asyncio.sleep(BACKOFF * (i + 1))  # outside the semaphore, so others keep running
+    row = await _attempt(task, agent_name, scenario, seed, sem, model=FALLBACK_MODEL)
+    row["model"] = f"fallback:{FALLBACK_MODEL}"
+    return row
 
 
 def row_key(r):
@@ -117,7 +147,7 @@ async def main(args):
             counter["n"] += 1
             f.write(json.dumps(row) + "\n")
             f.flush()
-            print(f"[{counter['n']}/{len(jobs)}] {row['agent']:<8} {row['scenario']:<12} {row['task']} seed={row['seed']} -> {row['reason']}")
+            print(f"[{counter['n']}/{len(jobs)}] {row['agent']:<8} {row['scenario']:<12} {row['task']} seed={row['seed']} [{row['model']}] -> {row['reason']}")
 
     await asyncio.gather(*(worker(j) for j in jobs))
     f.close()
