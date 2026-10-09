@@ -14,3 +14,4 @@ dist/
 *.temp
 results/*
 !results/.gitkeep
+!results/runs.jsonl
