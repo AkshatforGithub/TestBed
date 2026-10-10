@@ -12,7 +12,6 @@ import time
 import zlib
 from pathlib import Path
 
-
 from langchain_core.messages import AIMessage
 from langchain_mcp_adapters.tools import load_mcp_tools
 
@@ -36,9 +35,9 @@ SCENARIOS = {  # name -> (fault rate, fault modes)
 }
 
 RETRIES = 2
-BACKOFF = 20  
-FALLBACK_MODEL = os.environ.get("FALLBACK_MODEL", "qwen/qwen3-32b")
-PACE_SECONDS = float(os.environ.get("PACE_SECONDS", "0"))
+BACKOFF = 20  # seconds
+FALLBACK_MODEL = os.environ.get("FALLBACK_MODEL", "")  # empty = no fallback
+PACE_SECONDS = float(os.environ.get("PACE_SECONDS", "0"))  # pause after each run to stay under rate limits
 
 
 def load_tasks(split: str):
@@ -61,11 +60,10 @@ async def _attempt(task, agent_name, scenario, seed, sem, model=None):
         env = {
             "FAULT_RATE": str(rate),
             "FAULT_MODES": ",".join(modes),
-            "FAULT_SEED": str(seed),
+            "FAULT_SEED": str(zlib.crc32(f"{task['id']}|{seed}".encode())),
             "FAULT_HANG_SECONDS": str(config.FAULT_HANG_SECONDS),
             "STATE_PATH": state_path,
             "DB_PATH": str(config.DB_PATH),
-            "FAULT_SEED": str(zlib.crc32(f"{task['id']}|{seed}".encode())),
         }
         row = {
             "task": task["id"], "category": task["category"], "split": task["split"],
@@ -98,7 +96,7 @@ async def _attempt(task, agent_name, scenario, seed, sem, model=None):
             os.unlink(state_path)
         except OSError:
             pass
-            await asyncio.sleep(PACE_SECONDS)
+        await asyncio.sleep(PACE_SECONDS)  # after latency is recorded, still holding the semaphore slot
         return row
 
 
@@ -107,7 +105,7 @@ def is_rate_limit(reason: str) -> bool:
 
 
 async def run_one(task, agent_name, scenario, seed, sem):
-    """Retry the primary model on 429s, then fall back. Each attempt gets a fresh server and state."""
+    """Retry the primary model on 429s, then fall back if configured. Each attempt gets a fresh server and state."""
     for i in range(RETRIES + 1):
         row = await _attempt(task, agent_name, scenario, seed, sem, model=None)
         if not is_rate_limit(row["reason"]):
@@ -115,6 +113,9 @@ async def run_one(task, agent_name, scenario, seed, sem):
             return row
         if i < RETRIES:
             await asyncio.sleep(BACKOFF * (i + 1))  # outside the semaphore, so others keep running
+    if not FALLBACK_MODEL:
+        row["model"] = "primary_rate_limited"  # infrastructure failure, filter out before reporting
+        return row
     row = await _attempt(task, agent_name, scenario, seed, sem, model=FALLBACK_MODEL)
     row["model"] = f"fallback:{FALLBACK_MODEL}"
     return row
