@@ -18,10 +18,11 @@ from langchain_mcp_adapters.tools import load_mcp_tools
 
 from agents.baseline import build_baseline
 from agents.common import make_client
+from agents.hardened import build_hardened
 from harness.checker import diagnose, read_refunds
 from testbed import config
 
-BUILDERS = {"baseline": build_baseline}
+BUILDERS = {"baseline": build_baseline, "hardened": build_hardened}
 ALL_MODES = ["error", "timeout", "malformed", "post_commit"]
 SCENARIOS = {  # name -> (fault rate, fault modes)
     "clean": (0.0, ALL_MODES),
@@ -158,7 +159,7 @@ async def main(args):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--agents", default="baseline")
+    ap.add_argument("--agents", default="baseline,hardened")
     ap.add_argument("--scenarios", default="clean,mixed_30")
     ap.add_argument("--split", default="dev", choices=["dev", "test", "all"])
     ap.add_argument("--trials", type=int, default=3)
