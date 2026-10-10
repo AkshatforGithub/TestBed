@@ -38,6 +38,7 @@ SCENARIOS = {  # name -> (fault rate, fault modes)
 RETRIES = 2
 BACKOFF = 20  
 FALLBACK_MODEL = os.environ.get("FALLBACK_MODEL", "qwen/qwen3-32b")
+PACE_SECONDS = float(os.environ.get("PACE_SECONDS", "0"))
 
 
 def load_tasks(split: str):
@@ -97,6 +98,7 @@ async def _attempt(task, agent_name, scenario, seed, sem, model=None):
             os.unlink(state_path)
         except OSError:
             pass
+            await asyncio.sleep(PACE_SECONDS)
         return row
 
 
