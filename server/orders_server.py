@@ -68,7 +68,7 @@ async def lookup_order(order_id: str) -> str:
 
 @mcp.tool()
 async def issue_refund(order_id: str, amount: float, idempotency_key: str = "") -> str:
-    """Refund `amount` on an order. Pass an idempotency_key so retries are safe."""
+    """Refund `amount` on an order"""
     order = DB.get(order_id)
     if order is None:
         return json.dumps({"error": "order not found"})

@@ -9,7 +9,9 @@ import json
 import os
 import tempfile
 import time
+import zlib
 from pathlib import Path
+
 
 from langchain_core.messages import AIMessage
 from langchain_mcp_adapters.tools import load_mcp_tools
@@ -33,7 +35,7 @@ SCENARIOS = {  # name -> (fault rate, fault modes)
 }
 
 RETRIES = 2
-BACKOFF = 20  # seconds
+BACKOFF = 20  
 FALLBACK_MODEL = os.environ.get("FALLBACK_MODEL", "qwen/qwen3-32b")
 
 
@@ -61,6 +63,7 @@ async def _attempt(task, agent_name, scenario, seed, sem, model=None):
             "FAULT_HANG_SECONDS": str(config.FAULT_HANG_SECONDS),
             "STATE_PATH": state_path,
             "DB_PATH": str(config.DB_PATH),
+            "FAULT_SEED": str(zlib.crc32(f"{task['id']}|{seed}".encode())),
         }
         row = {
             "task": task["id"], "category": task["category"], "split": task["split"],
