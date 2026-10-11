@@ -70,6 +70,7 @@ async def _attempt(task, agent_name, scenario, seed, sem, model=None):
             "agent": agent_name, "scenario": scenario, "seed": seed,
             "success": False, "reason": "", "tool_calls": 0, "tokens": 0, "latency_s": 0.0,
         }
+        out = None
         t0 = time.time()
         try:
             client = make_client(env)
@@ -83,6 +84,8 @@ async def _attempt(task, agent_name, scenario, seed, sem, model=None):
                     ),
                     timeout=config.TASK_TIMEOUT_SECONDS,
                 )
+            if out is None:
+                raise RuntimeError("session closed without agent output (inner error swallowed)")
             ai = [m for m in out["messages"] if isinstance(m, AIMessage)]
             row["tool_calls"] = sum(len(m.tool_calls) for m in ai)
             row["tokens"] = sum((m.usage_metadata or {}).get("total_tokens", 0) for m in ai)
