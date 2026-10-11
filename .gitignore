@@ -16,3 +16,5 @@ results/*
 !results/.gitkeep
 !results/runs.jsonl
 !results/runs_test_original.jsonl
+!results/runs_test.jsonl
+!results/runs_test_seed0.jsonl
