@@ -12,7 +12,6 @@
 {"task": "t20", "category": "multi", "split": "test", "agent": "baseline", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 4, "tokens": 2679, "latency_s": 15.98, "model": "primary"}
 {"task": "t22", "category": "over_refund", "split": "test", "agent": "baseline", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 1, "tokens": 1039, "latency_s": 6.46, "model": "primary"}
 {"task": "t23", "category": "over_refund", "split": "test", "agent": "baseline", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 1, "tokens": 829, "latency_s": 6.14, "model": "primary"}
-{"task": "t28", "category": "reasoning", "split": "test", "agent": "hardened", "scenario": "post_commit", "seed": 0, "success": false, "reason": "crash:UnboundLocalError:cannot access local variable 'out' where it is not associated with a value", "tool_calls": 0, "tokens": 0, "latency_s": 0.71, "model": "primary"}
 {"task": "t24", "category": "once_only", "split": "test", "agent": "baseline", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 3, "tokens": 1877, "latency_s": 70.2, "model": "primary"}
 {"task": "t25", "category": "once_only", "split": "test", "agent": "baseline", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 2, "tokens": 1292, "latency_s": 2.94, "model": "primary"}
 {"task": "t27", "category": "reasoning", "split": "test", "agent": "baseline", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 3, "tokens": 1836, "latency_s": 3.58, "model": "primary"}
@@ -38,3 +37,4 @@
 {"task": "t27", "category": "reasoning", "split": "test", "agent": "hardened", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 3, "tokens": 2171, "latency_s": 7.59, "model": "primary"}
 {"task": "t29", "category": "reasoning", "split": "test", "agent": "hardened", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 2, "tokens": 1397, "latency_s": 4.28, "model": "primary"}
 {"task": "t30", "category": "reasoning", "split": "test", "agent": "hardened", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 2, "tokens": 1483, "latency_s": 4.91, "model": "primary"}
+{"task": "t28", "category": "reasoning", "split": "test", "agent": "hardened", "scenario": "post_commit", "seed": 0, "success": true, "reason": "ok", "tool_calls": 4, "tokens": 2751, "latency_s": 5.19, "model": "primary"}
